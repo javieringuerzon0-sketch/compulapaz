@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COMPULAPAZ | Expertos en Reparación de Computadoras</title>
+  <!-- SEO -->
+  <meta name="description"
+    content="Servicio profesional de reparación, mantenimiento y venta de computadoras en La Paz, BCS.">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Manrope:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap"
+    rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Shim process.env for browser environment
+    window.process = window.process || { env: { NODE_ENV: 'production' } };
+
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'bg-primary': '#0B0C12',
+            'bg-secondary': '#141824',
+            'accent-cyan': '#7DD3FC',
+            'accent-purple': '#A5B4FC',
+            'accent-pink': '#F0ABFC',
+            'text-primary': '#F8FAFC',
+            'text-secondary': '#A7B0C4',
+          },
+          fontFamily: {
+            mono: ['IBM Plex Mono', 'monospace'],
+            heading: ['Sora', 'sans-serif'],
+            sans: ['Manrope', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-bg-primary text-text-primary font-sans">
+  <div id="root"></div>
+  <script type="module" src="./index.tsx"></script>
+</body>
+
+</html>

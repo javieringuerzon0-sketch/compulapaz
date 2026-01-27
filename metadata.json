@@ -1,0 +1,8 @@
+
+{
+  "name": "COMPULAPAZ - Tech Repair Solutions",
+  "description": "A high-performance React landing page for a computer repair shop featuring an AI-powered technical diagnostic tool using Gemini.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
