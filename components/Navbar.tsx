@@ -25,9 +25,9 @@ export const Navbar: React.FC<NavbarProps> = ({ isScrolled }) => {
   };
 
   return (
-    <nav className={`fixed top-0 left-0 w-full z-[100] transition-all duration-300 ${isScrolled
-        ? 'h-16 bg-bg-secondary/95 backdrop-blur-md shadow-lg border-b border-white/10'
-        : 'h-20 bg-bg-primary/40 backdrop-blur-sm shadow-none border-b border-transparent'
+    <nav className={`fixed top-0 left-0 w-full z-[100] transition-all duration-150 ease-out ${isScrolled
+      ? 'h-16 bg-bg-secondary/95 backdrop-blur-md shadow-lg border-b border-white/10'
+      : 'h-20 bg-bg-primary/40 backdrop-blur-sm shadow-none border-b border-transparent'
       }`}>
       <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between gap-2">
         {/* Logo - Fixed sizing to prevent mobile overflow */}
@@ -39,7 +39,7 @@ export const Navbar: React.FC<NavbarProps> = ({ isScrolled }) => {
           <img
             src={logoUrl}
             alt="Compulapaz"
-            className={`w-auto object-contain transition-all duration-300 ${isScrolled ? 'h-9 md:h-14' : 'h-11 md:h-20'
+            className={`w-auto object-contain transition-all duration-200 ease-out ${isScrolled ? 'h-9 md:h-14' : 'h-11 md:h-20'
               }`}
           />
         </a>
