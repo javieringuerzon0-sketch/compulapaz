@@ -82,14 +82,11 @@ export const AIDiagnostic: React.FC = () => {
     };
 
     try {
-      // Acceso ultra-seguro a la API Key
-      const apiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY
-        || (window as any).process?.env?.GEMINI_API_KEY
-        || (window as any).process?.env?.API_KEY
-        || process.env.GEMINI_API_KEY
-        || process.env.API_KEY;
+      // Acceso a la API Key
+      const apiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY;
 
       if (!apiKey) {
+        // Sin API key, usar diagnóstico offline
         setResult(generateOfflineDiagnostic(problem));
         setLoading(false);
         return;
@@ -97,7 +94,7 @@ export const AIDiagnostic: React.FC = () => {
 
       const ai = new GoogleGenAI({ apiKey });
       const response = await ai.models.generateContent({
-        model: 'gemini-1.5-flash',
+        model: 'gemini-2.0-flash',
         contents: `Actua como tecnico experto de COMPULAPAZ. Responde en maximo 6 lineas, con diagnostico corto y accion recomendada. No uses Markdown. Problema: ${problem}`,
         config: {
           systemInstruction: 'Eres el asistente inteligente de COMPULAPAZ. Tu tono es profesional, claro y directo.',
@@ -106,15 +103,11 @@ export const AIDiagnostic: React.FC = () => {
         }
       });
 
-      setResult(response.text || 'No se pudo generar un diagnostico.');
+      setResult(response.text || generateOfflineDiagnostic(problem));
     } catch (error: any) {
       console.error('Diagnostic error:', error);
-      const rawMessage = String(error?.message || 'Error desconocido');
-      if (rawMessage.includes('API key not valid') || rawMessage.includes('API_KEY_INVALID')) {
-        setResult(generateOfflineDiagnostic(problem));
-        return;
-      }
-      setResult(`Error de conexion: ${rawMessage}. Por favor, contactanos directamente.`);
+      // En cualquier error, usar diagnóstico offline
+      setResult(generateOfflineDiagnostic(problem));
     } finally {
       setLoading(false);
     }
