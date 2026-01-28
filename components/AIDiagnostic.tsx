@@ -175,29 +175,30 @@ export const AIDiagnostic: React.FC = () => {
       <style>{`
         @keyframes fadeInUpCustom { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes scanline {
-          0% { top: -10px; opacity: 0; }
-          5% { opacity: 0.7; }
-          95% { opacity: 0.7; }
-          100% { top: calc(100% + 10px); opacity: 0; }
+          0% { top: 0%; opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
+          100% { top: 100%; opacity: 0; }
         }
         .scanline-container {
           position: absolute;
           inset: 0;
           pointer-events: none;
           z-index: 50;
-          overflow: visible;
+          overflow: hidden;
+          border-radius: 2.5rem; /* Mismo borde que la tarjeta para que no se salga en esquinas */
         }
         .scanline-line {
           position: absolute;
           left: 0;
           right: 0;
-          top: -10px;
-          height: 3px;
+          top: 0;
+          height: 4px; /* Un poco más gruesa */
           width: 100%;
-          background: linear-gradient(90deg, transparent 0%, rgba(0, 217, 255, 0.3) 20%, rgba(0, 217, 255, 0.8) 50%, rgba(0, 217, 255, 0.3) 80%, transparent 100%);
-          box-shadow: 0 0 10px rgba(0, 217, 255, 0.6), 0 0 20px rgba(0, 217, 255, 0.4);
-          animation: scanline 3.5s linear infinite;
-          will-change: top;
+          background: linear-gradient(90deg, transparent 0%, rgba(0, 217, 255, 0.1) 20%, rgba(0, 217, 255, 0.9) 50%, rgba(0, 217, 255, 0.1) 80%, transparent 100%);
+          box-shadow: 0 0 15px rgba(0, 217, 255, 0.8), 0 0 25px rgba(0, 217, 255, 0.4);
+          animation: scanline 3s linear infinite;
+          will-change: top, opacity;
         }
       `}</style>
 
