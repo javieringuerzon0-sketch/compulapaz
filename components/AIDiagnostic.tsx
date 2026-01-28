@@ -176,18 +176,20 @@ export const AIDiagnostic: React.FC = () => {
         @keyframes fadeInUpCustom { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes scanline {
           0% { transform: translateY(-100%); opacity: 0; }
-          50% { opacity: 0.2; }
-          100% { transform: translateY(1000%); opacity: 0; }
+          10% { opacity: 0.6; }
+          90% { opacity: 0.6; }
+          100% { transform: translateY(100vh); opacity: 0; }
         }
         .scanline-line {
           position: absolute;
           left: 0;
           right: 0;
           top: 0;
-          height: 1px;
+          height: 2px;
           width: 100%;
-          background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.2), transparent);
-          animation: scanline 8s linear infinite;
+          background: linear-gradient(90deg, transparent 0%, rgba(0, 217, 255, 0.2) 20%, rgba(0, 217, 255, 0.6) 50%, rgba(0, 217, 255, 0.2) 80%, transparent 100%);
+          box-shadow: 0 0 8px rgba(0, 217, 255, 0.5), 0 0 15px rgba(0, 217, 255, 0.3);
+          animation: scanline 6s linear infinite;
           will-change: transform;
         }
       `}</style>
