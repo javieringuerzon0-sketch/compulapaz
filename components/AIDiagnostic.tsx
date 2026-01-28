@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { GoogleGenAI } from '@google/genai';
+import { CalendarCheck } from 'lucide-react';
 
 export const AIDiagnostic: React.FC = () => {
   const [problem, setProblem] = useState('');
@@ -245,8 +246,9 @@ export const AIDiagnostic: React.FC = () => {
                     {result}
                   </div>
                   <div className="mt-8 flex justify-end">
-                    <a href="#contacto" className="px-6 py-3 bg-accent-cyan/10 border border-accent-cyan/30 text-accent-cyan font-heading font-bold text-xs rounded-xl uppercase tracking-widest hover:bg-accent-cyan hover:text-white transition-all">
-                      📅 Agendar Ahora
+                    <a href="#contacto" className="flex items-center gap-2 px-6 py-3 bg-accent-cyan/10 border border-accent-cyan/30 text-accent-cyan font-heading font-bold text-xs rounded-xl uppercase tracking-widest hover:bg-accent-cyan hover:text-white transition-all">
+                      <CalendarCheck className="w-4 h-4" />
+                      Agendar Ahora
                     </a>
                   </div>
                 </div>

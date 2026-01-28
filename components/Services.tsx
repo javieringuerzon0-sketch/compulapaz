@@ -1,39 +1,40 @@
 
 import React from 'react';
+import { Wrench, Sparkles, Globe, Gamepad2, Zap, HeadsetIcon } from 'lucide-react';
 
 const SERVICE_DATA = [
   {
-    icon: '🛠️',
+    icon: Wrench,
     title: 'Reparación de Hardware',
     desc: 'Diagnóstico y reparación de componentes físicos con garantía total.',
     list: ['Fallas de encendido', 'Cambio de pantallas', 'Reparación de tarjetas']
   },
   {
-    icon: '🧹',
+    icon: Sparkles,
     title: 'Mantenimiento',
     desc: 'Prolonga la vida útil de tus equipos con limpieza profesional profunda.',
     list: ['Limpieza de ventiladores', 'Pasta térmica nueva', 'Optimización de sistema']
   },
   {
-    icon: '🌐',
+    icon: Globe,
     title: 'Redes & WiFi',
     desc: 'Diseño e instalación de redes empresariales y domésticas de alta velocidad.',
     list: ['Configuración WiFi 6', 'Cableado estructurado', 'Seguridad de red']
   },
   {
-    icon: '🎮',
+    icon: Gamepad2,
     title: 'Venta de Equipos',
     desc: 'Equipos personalizados para gaming, oficina o diseño profesional.',
     list: ['Workstations', 'Laptops última gen', 'Periféricos premium']
   },
   {
-    icon: '⚡',
+    icon: Zap,
     title: 'Actualización',
     desc: 'No compres una nueva, ¡mejora la que ya tienes! Upgrades de alta velocidad.',
     list: ['Discos SSD (10x más rápido)', 'Expansión de RAM', 'Nuevos procesadores']
   },
   {
-    icon: '👨‍💻',
+    icon: HeadsetIcon,
     title: 'Soporte Técnico',
     desc: 'Asistencia técnica inmediata de forma remota o presencial.',
     list: ['Remoción de virus', 'Respaldo de datos', 'Capacitación personalizada']
@@ -54,7 +55,7 @@ export const Services: React.FC = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {SERVICE_DATA.map((service, idx) => (
             <div key={idx} className="bg-white/[0.03] border border-white/10 rounded-3xl p-8 hover:bg-accent-cyan/5 hover:border-accent-cyan/30 transition-all duration-300 group">
-              <span className="text-5xl mb-6 block transform group-hover:scale-110 transition-transform origin-left">{service.icon}</span>
+              <service.icon className="w-12 h-12 mb-6 text-accent-cyan transform group-hover:scale-110 transition-transform origin-left" strokeWidth={1.5} />
               <h3 className="text-xl font-heading font-bold text-accent-cyan mb-4 uppercase tracking-wide">{service.title}</h3>
               <p className="text-text-secondary text-sm mb-6 leading-relaxed font-medium">{service.desc}</p>
               <ul className="space-y-3">
