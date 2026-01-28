@@ -312,7 +312,7 @@ export const AIDiagnostic: React.FC = () => {
         </div>
 
         {/* SCANLINE OVERLAY: Hermano independiente flotando sobre todo */}
-        <div className="absolute inset-0 pointer-events-none z-50 overflow-hidden rounded-[2.5rem]">
+        <div className="absolute inset-0 pointer-events-none z-50 rounded-[2.5rem]">
           <div className="scanline-container-inner h-full w-full relative">
             <div className="scanline-line"></div>
           </div>

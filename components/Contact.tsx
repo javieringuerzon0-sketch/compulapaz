@@ -508,8 +508,8 @@ export const Contact: React.FC = () => {
           position: absolute;
           inset: -10% 0 0 0;
           background:
-            radial-gradient(40% 40% at 70% 30%, rgba(0, 217, 255, 0.35), transparent 65%),
-            radial-gradient(35% 35% at 30% 70%, rgba(240, 171, 252, 0.3), transparent 70%);
+            radial-gradient(40% 40% at 70% 30%, rgba(0, 217, 255, 0.25), transparent 65%),
+            radial-gradient(35% 35% at 30% 70%, rgba(125, 211, 252, 0.2), transparent 70%);
           animation: glowPulse 8s ease-in-out infinite;
         }
         .contact-select {
