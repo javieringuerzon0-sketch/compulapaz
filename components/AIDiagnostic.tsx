@@ -175,20 +175,29 @@ export const AIDiagnostic: React.FC = () => {
       <style>{`
         @keyframes fadeInUpCustom { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes scanline {
-          0% { top: -5%; opacity: 0; }
+          0% { transform: translateY(-100%); opacity: 0; }
           10% { opacity: 1; }
           90% { opacity: 1; }
-          100% { top: 105%; opacity: 0; }
+          100% { transform: translateY(500px); opacity: 0; }
         }
+        /* MÓVIL (altura pequeña) */
+        @media (max-height: 800px) {
+           @keyframes scanline {
+            0% { transform: translateY(-100%); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(120vh); opacity: 0; } /* Usar VH para asegurar que baje todo */
+          }
+        }
+        
         .scanline-line {
           position: absolute;
           left: 0;
           right: 0;
           top: 0;
           height: 3px;
-          /* Aseguramos que el ancho cubra todo */
           width: 100%;
-          background: linear-gradient(90deg, transparent 0%, rgba(0, 217, 255, 0.0) 20%, rgba(0, 217, 255, 1) 50%, rgba(0, 217, 255, 0.0) 80%, transparent 100%);
+          background: linear-gradient(90deg, transparent 0%, rgba(0, 217, 255, 0.) 20%, rgba(0, 217, 255, 1) 50%, rgba(0, 217, 255, 0.) 80%, transparent 100%);
           box-shadow: 0 0 10px rgba(0, 217, 255, 0.8), 0 0 20px rgba(0, 217, 255, 0.4);
           animation: scanline 4s linear infinite;
         }
