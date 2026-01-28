@@ -175,32 +175,31 @@ export const AIDiagnostic: React.FC = () => {
       <style>{`
         @keyframes fadeInUpCustom { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes scanline {
-          0% { top: -10%; opacity: 0; }
-          15% { opacity: 1; }
-          85% { opacity: 1; }
-          100% { top: 110%; opacity: 0; }
+          0% { top: -5%; opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
+          100% { top: 105%; opacity: 0; }
         }
         .scanline-container {
           position: absolute;
           inset: 0;
           pointer-events: none;
-          z-index: 50;
+          z-index: 50; /* Z-index alto pero controlado */
           overflow: hidden;
           border-radius: 2.5rem;
-          /* MÁSCARA CLAVE: Hace que todo lo que esté en el 10% superior o inferior sea transparente */
-          -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
-          mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+          -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+          mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
         }
         .scanline-line {
           position: absolute;
           left: 0;
           right: 0;
           top: 0;
-          height: 4px;
+          height: 3px;
           width: 100%;
-          background: linear-gradient(90deg, transparent 0%, rgba(0, 217, 255, 0.1) 20%, rgba(0, 217, 255, 0.9) 50%, rgba(0, 217, 255, 0.1) 80%, transparent 100%);
-          box-shadow: 0 0 15px rgba(0, 217, 255, 0.8), 0 0 25px rgba(0, 217, 255, 0.4);
-          animation: scanline 3s linear infinite;
+          background: linear-gradient(90deg, transparent 0%, rgba(0, 217, 255, 0.0) 20%, rgba(0, 217, 255, 1) 50%, rgba(0, 217, 255, 0.0) 80%, transparent 100%);
+          box-shadow: 0 0 10px rgba(0, 217, 255, 0.8), 0 0 20px rgba(0, 217, 255, 0.4);
+          animation: scanline 4s linear infinite;
         }
       `}</style>
 
