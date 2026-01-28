@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Star, CheckCircle } from 'lucide-react';
 
 const TESTIMONIALS = [
   {
@@ -32,7 +31,7 @@ export const Testimonials: React.FC = () => {
       {/* Decorative background elements */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-accent-cyan/30 to-transparent"></div>
       <div className="absolute -left-20 top-1/2 w-64 h-64 bg-accent-purple/5 blur-[100px] rounded-full pointer-events-none"></div>
-
+      
       <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-heading font-bold text-accent-cyan uppercase mb-4 tracking-tight">
@@ -43,18 +42,18 @@ export const Testimonials: React.FC = () => {
 
         <div className="grid md:grid-cols-3 gap-8">
           {TESTIMONIALS.map((t, idx) => (
-            <div
-              key={idx}
+            <div 
+              key={idx} 
               className="group bg-bg-secondary/40 border border-white/5 backdrop-blur-sm p-8 rounded-[2.5rem] relative transition-all duration-500 hover:border-accent-cyan/20 hover:bg-bg-secondary/60 hover:-translate-y-2 shadow-xl hover:shadow-accent-cyan/5"
             >
               {/* Floating Quote Icon */}
               <span className="absolute top-4 right-8 text-7xl text-accent-cyan/5 font-mono leading-none group-hover:text-accent-cyan/10 transition-colors">"</span>
-
+              
               <div className="relative z-10">
                 {/* Rating */}
                 <div className="flex gap-1 mb-6">
                   {[...Array(t.stars)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 text-yellow-500 fill-yellow-500 blur-[0.5px] drop-shadow-[0_0_8px_rgba(234,179,8,0.6)]" />
+                    <span key={i} className="text-yellow-400 text-sm drop-shadow-[0_0_8px_rgba(250,204,21,0.4)]">★</span>
                   ))}
                 </div>
 
@@ -66,9 +65,9 @@ export const Testimonials: React.FC = () => {
                   {/* Avatar with tech frame */}
                   <div className="relative">
                     <div className="absolute -inset-1 bg-gradient-to-tr from-accent-cyan to-accent-purple rounded-full blur-[2px] opacity-40 group-hover:opacity-100 transition-opacity"></div>
-                    <img
-                      src={t.image}
-                      alt={t.name}
+                    <img 
+                      src={t.image} 
+                      alt={t.name} 
                       className="relative w-14 h-14 rounded-full object-cover border-2 border-bg-secondary"
                     />
                     <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-bg-secondary rounded-full"></div>
@@ -93,13 +92,13 @@ export const Testimonials: React.FC = () => {
             </div>
           ))}
         </div>
-
+        
         {/* Verification Badge */}
         <div className="mt-16 flex justify-center opacity-40 hover:opacity-100 transition-opacity duration-500">
-          <div className="flex items-center gap-3 px-6 py-3 bg-white/5 rounded-full border border-white/10 backdrop-blur-md">
-            <CheckCircle className="text-accent-cyan w-5 h-5" />
-            <span className="text-[10px] font-bold text-text-secondary uppercase tracking-[0.3em]">Reseñas verificadas vía Google Maps & Facebook</span>
-          </div>
+           <div className="flex items-center gap-3 px-6 py-3 bg-white/5 rounded-full border border-white/10 backdrop-blur-md">
+             <span className="text-accent-cyan text-xl">✅</span>
+             <span className="text-[10px] font-bold text-text-secondary uppercase tracking-[0.3em]">Reseñas verificadas vía Google Maps & Facebook</span>
+           </div>
         </div>
       </div>
     </section>

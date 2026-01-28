@@ -1,195 +1,260 @@
 
-import React, { useState, useRef, useEffect } from 'react';
-import {
-  BrainCircuit,
-  Sparkles,
-  Send,
-  Calendar,
-  AlertCircle
-} from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { GoogleGenAI } from '@google/genai';
 
 export const AIDiagnostic: React.FC = () => {
   const [problem, setProblem] = useState('');
-  const [result, setResult] = useState('');
+  const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
   const [isReady, setIsReady] = useState(false);
-  const resultRef = useRef<HTMLDivElement>(null);
+  const [isTyping, setIsTyping] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!problem.trim() || loading) return;
+  useEffect(() => {
+    if (!problem.trim()) {
+      setIsReady(false);
+      setIsTyping(false);
+      return;
+    }
+    setIsTyping(true);
+    setIsReady(false);
+    const timer = setTimeout(() => {
+      setIsTyping(false);
+      setIsReady(true);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [problem]);
+
+  const handleDiagnostic = async () => {
+    if (!problem.trim()) return;
 
     setLoading(true);
-    setResult('');
+    setResult(null);
     setIsReady(false);
 
+    const generateOfflineDiagnostic = (input: string) => {
+      const text = input.toLowerCase();
+      let diagnostico = 'Posible fallo general del sistema.';
+      let causas = 'Software o hardware con fallas leves.';
+      let accion = 'Reinicia, verifica cables y elimina perifericos externos.';
+      let extra = 'Si persiste, trae el equipo para revision profesional.';
+      let nota = 'Podemos validar en taller con diagnostico completo.';
+
+      if (/(no enciende|no prende|no inicia|no arranca|no da corriente)/.test(text)) {
+        diagnostico = 'Posible falla de energia, fuente o bateria.';
+        causas = 'Adaptador, fuente interna o bateria degradada.';
+        accion = 'Prueba otro cargador/toma y revisa el boton de encendido.';
+      } else if (/(se apaga|sobrecalienta|calienta|apaga solo)/.test(text)) {
+        diagnostico = 'Posible sobrecalentamiento o ventilacion obstruida.';
+        causas = 'Polvo, pasta termica seca o ventilador fallando.';
+        accion = 'Limpieza interna y cambio de pasta termica.';
+      } else if (/(pantalla negra|no da imagen|sin video|pantalla|gpu)/.test(text)) {
+        diagnostico = 'Posible problema de video, pantalla o RAM.';
+        causas = 'Modulo RAM, flex de pantalla o GPU inestable.';
+        accion = 'Prueba RAM/monitor y revisa conexiones internas.';
+      } else if (/(lento|lenta|se traba|congela|tarda)/.test(text)) {
+        diagnostico = 'Sistema con almacenamiento lento o saturado.';
+        causas = 'Disco degradado, poco RAM o exceso de programas.';
+        accion = 'Limpieza de sistema y revision de SSD/RAM.';
+      } else if (/(wifi|internet|red|no conecta)/.test(text)) {
+        diagnostico = 'Falla de red o configuracion inestable.';
+        causas = 'Drivers, modem o señal inestable.';
+        accion = 'Reinicia modem/router y revisa drivers de red.';
+      } else if (/(teclado|touchpad|mouse|usb|puerto)/.test(text)) {
+        diagnostico = 'Posible desgaste o daño en puertos/perifericos.';
+        causas = 'Conectores flojos o soldadura fatigada.';
+        accion = 'Prueba otro puerto y revisa soldaduras internas.';
+      } else if (/(virus|malware|publicidad|pop)/.test(text)) {
+        diagnostico = 'Posible infeccion o software malicioso.';
+        causas = 'Descargas inseguras o software no confiable.';
+        accion = 'Escaneo profundo y limpieza de sistema.';
+      } else if (/(consola|ps4|ps5|xbox|switch)/.test(text)) {
+        diagnostico = 'Falla comun de hardware en consola.';
+        causas = 'Temperatura elevada o fuente inestable.';
+        accion = 'Revision de temperatura, fuente y limpieza interna.';
+      } else if (/(disco|ssd|hdd|almacenamiento)/.test(text)) {
+        diagnostico = 'Posible falla de disco o rendimiento degradado.';
+        causas = 'Sectores dañados o desgaste del SSD.';
+        accion = 'Diagnostico SMART y clonacion si es necesario.';
+      }
+
+      return `Diagnostico rapido: ${diagnostico}\nPosibles causas: ${causas}\nAccion recomendada: ${accion}\n${extra}\n${nota}`;
+    };
+
     try {
-      // Production Sync: 1769563180288 - Vercel Serverless Path
-      const response = await fetch('/api/diagnostic', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ problem }),
+      // Acceso ultra-seguro a la API Key
+      const apiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY
+        || (window as any).process?.env?.GEMINI_API_KEY
+        || (window as any).process?.env?.API_KEY
+        || process.env.GEMINI_API_KEY
+        || process.env.API_KEY;
+
+      if (!apiKey) {
+        setResult(generateOfflineDiagnostic(problem));
+        setLoading(false);
+        return;
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
+      const response = await ai.models.generateContent({
+        model: 'gemini-1.5-flash',
+        contents: `Actua como tecnico experto de COMPULAPAZ. Responde en maximo 6 lineas, con diagnostico corto y accion recomendada. No uses Markdown. Problema: ${problem}`,
+        config: {
+          systemInstruction: 'Eres el asistente inteligente de COMPULAPAZ. Tu tono es profesional, claro y directo.',
+          maxOutputTokens: 140,
+          temperature: 0.2,
+        }
       });
 
-      if (!response.ok) {
-        throw new Error('Connection error');
+      setResult(response.text || 'No se pudo generar un diagnostico.');
+    } catch (error: any) {
+      console.error('Diagnostic error:', error);
+      const rawMessage = String(error?.message || 'Error desconocido');
+      if (rawMessage.includes('API key not valid') || rawMessage.includes('API_KEY_INVALID')) {
+        setResult(generateOfflineDiagnostic(problem));
+        return;
       }
-
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-      let fullText = '';
-
-      if (reader) {
-        setIsTyping(true);
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          const chunk = decoder.decode(value);
-          const lines = chunk.split('\n');
-
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const data = line.slice(6).trim();
-              if (data === '[DONE]' || data === '"[DONE]"') break;
-
-              try {
-                const parsed = JSON.parse(data);
-                fullText += parsed;
-                setResult(fullText);
-              } catch (e) {
-                // Fallback for raw strings
-                if (data.startsWith('"') && data.endsWith('"')) {
-                  fullText += data.slice(1, -1);
-                } else {
-                  fullText += data;
-                }
-                setResult(fullText);
-              }
-            }
-          }
-        }
-        setIsTyping(false);
-        setIsReady(true);
-      }
-    } catch (err) {
-      setResult('Lo sentimos, hubo un error al conectar con el servidor de inteligencia artificial. Por favor, intenta de nuevo o contáctanos directamente.');
+      setResult(`Error de conexion: ${rawMessage}. Por favor, contactanos directamente.`);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (resultRef.current && (isTyping || isReady)) {
-      resultRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-  }, [result, isTyping, isReady]);
-
   return (
-    <section id="ai-help" className="py-24 relative overflow-hidden section-nitidez">
-      {/* Background Decor */}
-      <div className="absolute top-0 left-0 w-full h-full bg-grid-white-pattern opacity-[0.03] pointer-events-none"></div>
+    <div className="container mx-auto px-6 relative z-10">
+      <style>{`
+        @keyframes fadeInUpCustom { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scanline {
+          0% { top: -6px; opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
+          100% { top: calc(100% + 6px); opacity: 0; }
+        }
+        @keyframes pulseGreen { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } }
+        .animate-fade-in-up { animation: fadeInUpCustom 0.6s ease-out forwards; }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .scanline-track {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          z-index: 40;
+        }
+        .scanline-line {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: -6px;
+          height: 3px;
+          width: 100%;
+          background: linear-gradient(90deg, transparent, rgba(125,211,252,0.9), transparent);
+          filter: blur(0.6px);
+          animation: scanline 2.2s linear infinite;
+          will-change: transform;
+        }
+      `}</style>
 
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="max-w-4xl mx-auto bg-bg-secondary/40 backdrop-blur-xl border border-white/10 rounded-[3rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
-
+      <div className="relative max-w-5xl mx-auto">
+        <div className="absolute -inset-1 rounded-[2.75rem] bg-gradient-to-r from-accent-cyan/25 via-accent-purple/20 to-accent-pink/20 blur-2xl opacity-70"></div>
+        <div className="relative bg-bg-secondary/70 border border-white/10 rounded-[2.5rem] p-8 md:p-12 backdrop-blur-2xl shadow-[0_35px_90px_rgba(0,0,0,0.55)] overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(125,211,252,0.18),transparent_55%)]"></div>
+          <div className="absolute inset-0 opacity-35 bg-[linear-gradient(120deg,rgba(255,255,255,0.08),transparent_40%)]"></div>
+          <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-accent-cyan/60 to-transparent"></div>
+          <div className="absolute -right-24 -top-24 w-72 h-72 rounded-full bg-accent-cyan/15 blur-3xl"></div>
+          <div className="absolute -left-24 -bottom-24 w-72 h-72 rounded-full bg-accent-pink/10 blur-3xl"></div>
+          <div className="absolute inset-0 pointer-events-none opacity-30" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
           <div className="scanline-track">
             <div className="scanline-line"></div>
           </div>
 
-          <div className="relative z-10">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-10">
+          <div className="relative">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-10 animate-fade-in-up">
               <div className="flex items-center gap-6">
                 <div className="relative">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-accent-cyan to-accent-purple flex items-center justify-center shadow-[0_0_30px_rgba(0,217,255,0.4)]">
-                    <BrainCircuit className="h-8 w-8 text-white stroke-[1.5]" />
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-accent-cyan to-accent-purple flex items-center justify-center shadow-[0_0_30px_rgba(125,211,252,0.45)]">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="32"
+                      height="32"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-8 w-8 text-white"
+                      aria-hidden="true"
+                    >
+                      <circle cx="5" cy="5" r="2"></circle>
+                      <circle cx="19" cy="5" r="2"></circle>
+                      <circle cx="12" cy="12" r="2"></circle>
+                      <circle cx="5" cy="19" r="2"></circle>
+                      <circle cx="19" cy="19" r="2"></circle>
+                      <path d="M7 5h10"></path>
+                      <path d="M6.5 6.5l4 4"></path>
+                      <path d="M17.5 6.5l-4 4"></path>
+                      <path d="M6.5 17.5l4-4"></path>
+                      <path d="M17.5 17.5l-4-4"></path>
+                      <path d="M7 19h10"></path>
+                    </svg>
                   </div>
                   {(loading || isTyping) && (
-                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-accent-pink rounded-full animate-ping"></div>
+                    <div className="absolute -inset-1 border-2 border-accent-cyan rounded-2xl animate-ping opacity-30"></div>
                   )}
                 </div>
                 <div>
-                  <h2 className="text-3xl md:text-3xl font-heading font-bold text-white uppercase tracking-tight">
-                    Centro de Diagnóstico
-                  </h2>
-                  <div className="flex items-center gap-2 mt-1">
-                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                    <span className="text-[10px] font-bold text-accent-cyan uppercase tracking-[0.2em] font-mono">IA Gemini • Respuesta en tiempo real</span>
+                  <h2 className="text-3xl md:text-4xl font-heading font-semibold text-white uppercase tracking-tight">Centro de Diagnostico</h2>
+                  <div className="mt-3 flex flex-wrap items-center gap-3">
+                    <span className={`w-2 h-2 rounded-full ${isReady ? 'bg-green-400' : 'bg-accent-cyan'} animate-pulse`}></span>
+                    <span className="text-accent-cyan text-[10px] font-bold uppercase tracking-[0.35em]">IA Gemini 2025</span>
+                    <span className="text-[10px] uppercase tracking-[0.3em] text-text-secondary font-bold">Analisis preliminar</span>
                   </div>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                  <p className="text-[10px] uppercase tracking-[0.25em] text-text-secondary font-bold">Respuesta</p>
+                  <p className="text-lg font-heading font-semibold text-white">2-5 min</p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                  <p className="text-[10px] uppercase tracking-[0.25em] text-text-secondary font-bold">Soporte</p>
+                  <p className="text-lg font-heading font-semibold text-white">Local</p>
                 </div>
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="relative group">
+            <div className="space-y-8">
               <textarea
                 value={problem}
                 onChange={(e) => setProblem(e.target.value)}
-                placeholder="Describe qué le sucede a tu equipo (ej: 'No enciende', 'Se calienta mucho', 'Pantalla rota'...)"
-                className="w-full bg-black/40 border border-white/10 rounded-2xl p-6 text-text-primary placeholder:text-text-secondary/50 focus:outline-none focus:border-accent-cyan/40 focus:ring-4 focus:ring-accent-cyan/5 transition-all min-h-[160px] text-lg font-medium resize-none shadow-inner"
+                placeholder="Describe el sintoma de tu equipo..."
+                className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-white focus:border-accent-cyan/60 h-40 resize-none font-mono text-sm animate-fade-in-up delay-1 shadow-[inset_0_0_20px_rgba(0,0,0,0.35)]"
               />
+
               <button
-                type="submit"
+                onClick={handleDiagnostic}
                 disabled={loading || !problem.trim()}
-                className={`absolute bottom-6 right-6 px-8 py-4 rounded-xl font-heading font-bold text-xs uppercase tracking-widest transition-all overflow-hidden group
-                  ${loading || !problem.trim()
-                    ? 'bg-white/5 text-white/20 cursor-not-allowed'
-                    : 'bg-accent-cyan text-white shadow-[0_10px_20px_rgba(0,217,255,0.3)] hover:shadow-[0_15px_30px_rgba(0,217,255,0.4)] hover:-translate-y-1'
-                  }`}
+                className="w-full py-5 bg-gradient-to-r from-accent-cyan to-accent-purple text-bg-primary font-heading font-bold rounded-2xl hover:brightness-110 transition-all disabled:opacity-30 shadow-[0_15px_35px_rgba(125,211,252,0.25)] animate-fade-in-up delay-2"
               >
-                <div className="flex items-center gap-3 relative z-10">
-                  {loading ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      <span>Analizando...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                      <span>Iniciar Análisis IA</span>
-                    </>
-                  )}
-                </div>
+                {loading ? 'ANALIZANDO...' : 'INICIAR ANALISIS IA'}
               </button>
-            </form>
 
-            {result && (
-              <div
-                ref={resultRef}
-                className="mt-10 p-8 bg-black/45 border border-accent-cyan/20 rounded-[2rem] animate-fade-in-up shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative group"
-              >
-                <div className="absolute top-4 right-8 flex items-center gap-2 opacity-30">
-                  <Sparkles className="w-3 h-3 text-accent-cyan" />
-                  <span className="text-[8px] font-bold uppercase tracking-widest">Resultado Generado</span>
-                </div>
-
-                <div className="font-mono text-sm md:text-base text-text-primary/90 whitespace-pre-line leading-relaxed tracking-tight">
-                  {result}
-                  {isTyping && <span className="inline-block w-2 h-5 ml-1 bg-accent-cyan animate-pulse align-middle"></span>}
-                </div>
-
-                {isReady && (
-                  <div className="mt-8 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-6">
-                    <div className="flex items-center gap-3 text-text-secondary">
-                      <AlertCircle className="w-5 h-5 text-accent-cyan" />
-                      <p className="text-[10px] font-medium max-w-[250px] leading-tight">
-                        Este es un pre-diagnóstico digital. Para una solución definitiva, visítanos.
-                      </p>
-                    </div>
-                    <a
-                      href="#contacto"
-                      className="w-full sm:w-auto px-8 py-4 bg-accent-cyan/10 border border-accent-cyan/30 text-accent-cyan font-heading font-bold text-[10px] rounded-xl uppercase tracking-widest hover:bg-accent-cyan hover:text-white transition-all flex items-center justify-center gap-3 group"
-                    >
-                      <Calendar className="w-4 h-4" />
-                      Agendar en Sucursal
+              {result && (
+                <div className="mt-10 p-8 bg-black/45 border border-accent-cyan/20 rounded-[2rem] animate-fade-in-up delay-3">
+                  <div className="bg-bg-secondary/80 rounded-xl p-6 border border-white/5 font-mono text-sm text-text-primary/90 whitespace-pre-line">
+                    {result}
+                  </div>
+                  <div className="mt-8 flex justify-end">
+                    <a href="#contacto" className="px-6 py-3 bg-accent-cyan/10 border border-accent-cyan/30 text-accent-cyan font-heading font-bold text-xs rounded-xl uppercase tracking-widest hover:bg-accent-cyan hover:text-white transition-all">
+                      📅 Agendar Ahora
                     </a>
                   </div>
-                )}
-              </div>
-            )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
