@@ -114,17 +114,6 @@ export const Contact: React.FC = () => {
         <div className="contact-stars contact-stars-slow" aria-hidden="true"></div>
         <div className="contact-stars contact-stars-fast" aria-hidden="true"></div>
         <div className="contact-glow" aria-hidden="true"></div>
-        <div className="contact-planet-mask absolute inset-0">
-          <div className="contact-planet-spin absolute inset-0">
-            <img
-              src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/77f55872-adf5-4910-9a7c-d21c0041bbe1_3840w.webp"
-              alt=""
-              className="absolute inset-0 h-full w-full object-cover"
-              style={{ filter: 'brightness(1.2) contrast(1.1) saturate(1.1)' }}
-              aria-hidden="true"
-            />
-          </div>
-        </div>
         <div
           className="absolute -left-40 top-10 h-[70vh] w-[60vh] rounded-full blur-3xl opacity-25"
           style={{
@@ -479,10 +468,6 @@ export const Contact: React.FC = () => {
           50% { opacity: 0.45; transform: translate3d(-2%, 1%, 0) scale(1.05); }
           100% { opacity: 0.22; transform: translate3d(0, 0, 0) scale(1); }
         }
-        @keyframes contactPlanetSpin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
         .premium-card {
           transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -523,17 +508,6 @@ export const Contact: React.FC = () => {
             radial-gradient(40% 40% at 70% 30%, rgba(0, 217, 255, 0.35), transparent 65%),
             radial-gradient(35% 35% at 30% 70%, rgba(240, 171, 252, 0.3), transparent 70%);
           animation: glowPulse 8s ease-in-out infinite;
-        }
-        .contact-planet-mask {
-          --planet-x: 72%;
-          --planet-y: 46%;
-          --planet-size: 22%;
-          clip-path: circle(var(--planet-size) at var(--planet-x) var(--planet-y));
-        }
-        .contact-planet-spin {
-          transform-origin: var(--planet-x) var(--planet-y);
-          animation: contactPlanetSpin 14s linear infinite;
-          will-change: transform;
         }
         .contact-select {
           color: #e2e8f0;
@@ -576,7 +550,6 @@ export const Contact: React.FC = () => {
         .animate-in[data-delay="500"] { animation-delay: 500ms; }
         .animate-in[data-delay="600"] { animation-delay: 600ms; }
         @media (prefers-reduced-motion: reduce) {
-          .contact-planet-spin { animation: none; }
           .contact-stars-slow { animation: none; }
           .contact-stars-fast { animation: none; }
           .contact-glow { animation: none; }
