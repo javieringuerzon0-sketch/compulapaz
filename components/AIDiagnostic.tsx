@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { CalendarCheck } from 'lucide-react';
 
 export const AIDiagnostic: React.FC = () => {
@@ -86,28 +86,27 @@ export const AIDiagnostic: React.FC = () => {
       const apiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY;
 
       if (!apiKey) {
-        // Sin API key, usar diagnóstico offline
-        setResult(generateOfflineDiagnostic(problem));
+        setResult('Error: API Key no configurada. Contacta al administrador.');
         setLoading(false);
         return;
       }
 
-      const ai = new GoogleGenAI({ apiKey });
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.0-flash',
-        contents: `Actua como tecnico experto de COMPULAPAZ. Responde en maximo 6 lineas, con diagnostico corto y accion recomendada. No uses Markdown. Problema: ${problem}`,
-        config: {
-          systemInstruction: 'Eres el asistente inteligente de COMPULAPAZ. Tu tono es profesional, claro y directo.',
-          maxOutputTokens: 140,
-          temperature: 0.2,
-        }
-      });
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-      setResult(response.text || generateOfflineDiagnostic(problem));
+      const prompt = `Actua como tecnico experto de COMPULAPAZ, un taller de reparacion de computadoras y consolas.
+Responde en maximo 6 lineas, con diagnostico corto y accion recomendada.
+No uses Markdown ni caracteres especiales.
+Problema del cliente: ${problem}`;
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
+
+      setResult(text || 'No se pudo generar un diagnostico. Intenta de nuevo.');
     } catch (error: any) {
       console.error('Diagnostic error:', error);
-      // En cualquier error, usar diagnóstico offline
-      setResult(generateOfflineDiagnostic(problem));
+      setResult(`Error de IA: ${error.message || 'Error desconocido'}. Por favor, contactanos directamente.`);
     } finally {
       setLoading(false);
     }
