@@ -29,7 +29,7 @@ loadEnvFile('.env.local');
 loadEnvFile('.env');
 
 const PORT = Number(process.env.AI_SERVER_PORT || process.env.PORT || 8787);
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || '';
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
 const ALLOWED_ORIGIN = process.env.AI_ALLOWED_ORIGIN || '*';
 
@@ -89,6 +89,20 @@ const server = http.createServer(async (req, res) => {
       const problem = payload.problem;
 
       if (!problem) { sendJson(res, 400, { error: 'Missing problem' }); return; }
+
+      if (!GEMINI_API_KEY) {
+        res.writeHead(200, {
+          'Content-Type': 'text/event-stream; charset=utf-8',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+          'X-Accel-Buffering': 'no',
+        });
+        res.write(':ok\n\n');
+        writeSse(res, generateOfflineDiagnostic(problem));
+        res.write('data: [DONE]\n\n');
+        res.end();
+        return;
+      }
 
       const aiRes = await createDiagnosticStream({
         apiKey: GEMINI_API_KEY,

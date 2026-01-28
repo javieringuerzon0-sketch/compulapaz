@@ -43,8 +43,16 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Missing problem description' });
     }
 
-    const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+    const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || '';
     const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+
+    if (!GEMINI_API_KEY) {
+        console.error('Missing GEMINI_API_KEY');
+        res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
+        res.write(`data: ${JSON.stringify(generateOfflineDiagnostic(problem))}\n\n`);
+        res.write('data: "[DONE]"\n\n');
+        return res.end();
+    }
 
     try {
         const aiRes = await createDiagnosticStream({

@@ -20,49 +20,49 @@ export const Navbar: React.FC<NavbarProps> = ({ isScrolled }) => {
         top: offsetPosition,
         behavior: 'smooth'
       });
-      
+
       // Update URL hash without jumping
       window.history.pushState(null, '', id);
     }
   };
 
   return (
-    <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-150 ${
-      isScrolled ? 'h-16 bg-bg-secondary/50 backdrop-blur-md shadow-lg border-b border-accent-cyan/10' : 'h-28 bg-bg-primary/50 backdrop-blur-sm'
-    }`}>
-      <div className="container mx-auto px-6 h-full flex items-center justify-between">
-        <a 
-          href="#home" 
+    <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'h-20 bg-bg-secondary/70 backdrop-blur-xl shadow-lg border-b border-white/5' : 'h-28 bg-transparent'
+      }`}>
+      <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
+        <a
+          href="#home"
           onClick={(e) => scrollToSection(e, '#home')}
-          className="flex items-center gap-3 text-accent-cyan font-heading font-bold text-xl tracking-wider group"
+          className="flex items-center gap-3 text-accent-cyan font-heading font-bold text-xl tracking-wider group shrink-0"
         >
           <img
             src={logoUrl}
             alt="Compulapaz"
-            className={`w-auto object-contain transition-all duration-150 ${
-              isScrolled ? 'h-10 md:h-12' : 'h-20 md:h-24'
-            }`}
+            className={`w-auto object-contain transition-all duration-300 ${isScrolled ? 'h-16' : 'h-24'
+              }`}
           />
         </a>
-        <div className="flex items-center gap-4 md:gap-8">
+
+        {/* Navigation - Aligned further to the right as requested */}
+        <div className="hidden md:flex items-center gap-12 ml-auto pr-6">
           <a
             href="#servicios"
             onClick={(e) => scrollToSection(e, '#servicios')}
-            className="text-text-secondary hover:text-accent-cyan transition-colors font-bold text-xs md:text-sm uppercase tracking-wide"
+            className="text-text-secondary hover:text-accent-cyan transition-colors font-bold text-[11px] uppercase tracking-[0.2em]"
           >
             Servicios
           </a>
           <a
             href="#ai-help"
             onClick={(e) => scrollToSection(e, '#ai-help')}
-            className="text-text-secondary hover:text-accent-purple transition-colors font-bold text-xs md:text-sm uppercase tracking-wide"
+            className="text-text-secondary hover:text-accent-purple transition-colors font-bold text-[11px] uppercase tracking-[0.2em]"
           >
             Diagnóstico AI
           </a>
           <a
             href="#contacto"
             onClick={(e) => scrollToSection(e, '#contacto')}
-            className="text-text-secondary hover:text-accent-cyan transition-colors font-bold text-xs md:text-sm uppercase tracking-wide"
+            className="text-text-secondary hover:text-accent-cyan transition-colors font-bold text-[11px] uppercase tracking-[0.2em]"
           >
             Contacto
           </a>

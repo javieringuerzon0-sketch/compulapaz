@@ -15,6 +15,7 @@ View your app in AI Studio: https://ai.studio/apps/drive/1BE068pEPrp94kyEop8sA5k
 
 1. Install dependencies:
    `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key (used by the streaming API route)
+   Optional: set `VITE_GEMINI_API_KEY` if you want the client fallback when the API route is not running locally
 3. Run the app:
    `npm run dev`

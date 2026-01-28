@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 const contactMaskStyle = {
-  maskImage: 'linear-gradient(90deg, transparent, black 55%, black 60%, transparent)',
-  WebkitMaskImage: 'linear-gradient(90deg, transparent, black 55%, black 60%, transparent)'
+  maskImage: 'radial-gradient(ellipse at center, black 60%, transparent 100%)',
+  WebkitMaskImage: 'radial-gradient(ellipse at center, black 60%, transparent 100%)'
 } as React.CSSProperties;
 
 export const Contact: React.FC = () => {
@@ -120,6 +120,7 @@ export const Contact: React.FC = () => {
               src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/77f55872-adf5-4910-9a7c-d21c0041bbe1_3840w.webp"
               alt=""
               className="absolute inset-0 h-full w-full object-cover"
+              style={{ filter: 'brightness(1.2) contrast(1.1) saturate(1.1)' }}
               aria-hidden="true"
             />
           </div>
@@ -161,7 +162,7 @@ export const Contact: React.FC = () => {
         </div>
 
         <div className="mt-12 grid md:grid-cols-2 gap-8">
-          <div className="relative rounded-2xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur animate-in" data-delay="300">
+          <div className="relative rounded-2xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur animate-in premium-card" data-delay="300">
             <h3 className="text-xl font-semibold text-text-primary mb-6">Enviar una solicitud</h3>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -313,7 +314,7 @@ export const Contact: React.FC = () => {
           </div>
 
           <div className="space-y-8">
-            <div className="relative rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl backdrop-blur animate-in" data-delay="400">
+            <div className="relative rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl backdrop-blur animate-in premium-card" data-delay="400">
               <div className="flex items-center gap-4">
                 <div className="h-12 w-12 rounded-xl bg-white/10 border border-white/10 p-3 shadow-lg">
                   <svg
@@ -341,7 +342,7 @@ export const Contact: React.FC = () => {
               </div>
             </div>
 
-            <div className="relative rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl backdrop-blur animate-in" data-delay="500">
+            <div className="relative rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl backdrop-blur animate-in premium-card" data-delay="500">
               <div className="flex items-center gap-4">
                 <div className="h-12 w-12 rounded-xl bg-white/10 border border-white/10 p-3 shadow-lg">
                   <svg
@@ -368,7 +369,7 @@ export const Contact: React.FC = () => {
               </div>
             </div>
 
-            <div className="relative rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl backdrop-blur animate-in" data-delay="600">
+            <div className="relative rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl backdrop-blur animate-in premium-card" data-delay="600">
               <div className="flex items-center gap-4">
                 <div className="h-12 w-12 rounded-xl bg-white/10 border border-white/10 p-3 shadow-lg">
                   <svg
@@ -461,6 +462,10 @@ export const Contact: React.FC = () => {
           from { opacity: 0; transform: translateY(16px); }
           to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes shine {
+          from { transform: translateX(-100%) skewX(-15deg); }
+          to { transform: translateX(200%) skewX(-15deg); }
+        }
         @keyframes starsDriftSlow {
           from { background-position: 0 0, 0 0, 0 0; }
           to { background-position: 220px 160px, -180px 120px, 140px -220px; }
@@ -471,12 +476,21 @@ export const Contact: React.FC = () => {
         }
         @keyframes glowPulse {
           0% { opacity: 0.22; transform: translate3d(0, 0, 0) scale(1); }
-          50% { opacity: 0.36; transform: translate3d(-2%, 1%, 0) scale(1.05); }
+          50% { opacity: 0.45; transform: translate3d(-2%, 1%, 0) scale(1.05); }
           100% { opacity: 0.22; transform: translate3d(0, 0, 0) scale(1); }
         }
         @keyframes contactPlanetSpin {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
+        }
+        .premium-card {
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .premium-card:hover {
+          transform: translateY(-4px);
+          background-color: rgba(255, 255, 255, 0.08);
+          border-color: rgba(0, 217, 255, 0.4);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 217, 255, 0.1);
         }
         .contact-stars {
           position: absolute;
@@ -506,9 +520,9 @@ export const Contact: React.FC = () => {
           position: absolute;
           inset: -10% 0 0 0;
           background:
-            radial-gradient(40% 40% at 70% 30%, rgba(125, 211, 252, 0.25), transparent 65%),
-            radial-gradient(35% 35% at 30% 70%, rgba(240, 171, 252, 0.18), transparent 70%);
-          animation: glowPulse 10s ease-in-out infinite;
+            radial-gradient(40% 40% at 70% 30%, rgba(0, 217, 255, 0.35), transparent 65%),
+            radial-gradient(35% 35% at 30% 70%, rgba(240, 171, 252, 0.3), transparent 70%);
+          animation: glowPulse 8s ease-in-out infinite;
         }
         .contact-planet-mask {
           --planet-x: 72%;

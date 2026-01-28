@@ -13,24 +13,18 @@ export const AIDiagnostic: React.FC = () => {
   useEffect(() => {
     if (!problem.trim()) {
       setIsReady(false);
-      setIsTyping(false);
       return;
     }
-    setIsTyping(true);
-    setIsReady(false);
-    const timer = setTimeout(() => {
-      setIsTyping(false);
-      setIsReady(true);
-    }, 1000);
-    return () => clearTimeout(timer);
+    setIsReady(true);
   }, [problem]);
 
   const handleDiagnostic = async () => {
     if (!problem.trim()) return;
 
     setLoading(true);
-    setResult(null);
+    setResult('');
     setIsReady(false);
+    setIsTyping(true);
 
     const generateOfflineDiagnostic = (input: string) => {
       const text = input.toLowerCase();
@@ -81,34 +75,98 @@ export const AIDiagnostic: React.FC = () => {
       return `Diagnostico rapido: ${diagnostico}\nPosibles causas: ${causas}\nAccion recomendada: ${accion}\n${extra}\n${nota}`;
     };
 
-    try {
-      // Acceso a la API Key
-      const apiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY;
+    const streamFromApi = async (input: string) => {
+      const response = await fetch('/api/diagnostic', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ problem: input }),
+      });
 
-      if (!apiKey) {
-        setResult('Error: API Key no configurada. Contacta al administrador.');
-        setLoading(false);
-        return;
+      if (!response.ok || !response.body) {
+        throw new Error(`API request failed (${response.status})`);
       }
 
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
 
-      const prompt = `Actua como tecnico experto de COMPULAPAZ, un taller de reparacion de computadoras y consolas.
-Responde en maximo 6 lineas, con diagnostico corto y accion recomendada.
-No uses Markdown ni caracteres especiales.
-Problema del cliente: ${problem}`;
+      const handleLine = (line: string) => {
+        const trimmedLine = line.trim();
+        if (!trimmedLine.startsWith('data:')) return false;
 
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const text = response.text();
+        const raw = trimmedLine.slice(5).trim();
+        if (!raw) return false;
 
-      setResult(text || 'No se pudo generar un diagnostico. Intenta de nuevo.');
+        let payload: unknown = raw;
+        try {
+          payload = JSON.parse(raw);
+        } catch (e) {
+          payload = raw;
+        }
+
+        if (payload === '[DONE]') return true;
+        if (typeof payload === 'string') {
+          setResult((prev) => `${prev ?? ''}${payload}`);
+        }
+        return false;
+      };
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const parts = buffer.split('\n');
+        buffer = parts.pop() || '';
+
+        for (const line of parts) {
+          if (handleLine(line)) return;
+        }
+      }
+
+      if (buffer) {
+        handleLine(buffer);
+      }
+    };
+
+    try {
+      try {
+        await streamFromApi(problem);
+      } catch (apiError) {
+        const apiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY || (import.meta as any).env?.GEMINI_API_KEY;
+
+        if (!apiKey) {
+          setResult(generateOfflineDiagnostic(problem));
+          return;
+        }
+
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const prompt = `Actua como tecnico experto de COMPULAPAZ, un taller de reparacion de computadoras y consolas.
+ Responde en maximo 6 lineas, con diagnostico corto y accion recomendada.
+ No uses Markdown ni caracteres especiales.
+ Problema del cliente: ${problem}`;
+
+        let result;
+        try {
+          const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+          result = await model.generateContent(prompt);
+        } catch (e: any) {
+          console.warn('Primary model failed, trying fallback...', e);
+          const fallbackModel = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-8b' });
+          result = await fallbackModel.generateContent(prompt);
+        }
+
+        const response = await result.response;
+        const text = response.text();
+
+        setResult(text || 'No se pudo generar un diagnostico. Intenta de nuevo.');
+      }
     } catch (error: any) {
       console.error('Diagnostic error:', error);
-      setResult(`Error de IA: ${error.message || 'Error desconocido'}. Por favor, contactanos directamente.`);
+      setResult(`Error de IA: ${error.message || 'Error desconocido'}\n[${error.name || 'API Error'}]\nPor favor, contactanos directamente.`);
     } finally {
       setLoading(false);
+      setIsTyping(false);
     }
   };
 
@@ -117,32 +175,19 @@ Problema del cliente: ${problem}`;
       <style>{`
         @keyframes fadeInUpCustom { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes scanline {
-          0% { top: -6px; opacity: 0; }
-          10% { opacity: 1; }
-          90% { opacity: 1; }
-          100% { top: calc(100% + 6px); opacity: 0; }
-        }
-        @keyframes pulseGreen { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } }
-        .animate-fade-in-up { animation: fadeInUpCustom 0.6s ease-out forwards; }
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
-        .scanline-track {
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-          z-index: 40;
+          0% { transform: translateY(-100%); opacity: 0; }
+          50% { opacity: 0.2; }
+          100% { transform: translateY(1000%); opacity: 0; }
         }
         .scanline-line {
           position: absolute;
           left: 0;
           right: 0;
-          top: -6px;
-          height: 3px;
+          top: 0;
+          height: 1px;
           width: 100%;
-          background: linear-gradient(90deg, transparent, rgba(125,211,252,0.9), transparent);
-          filter: blur(0.6px);
-          animation: scanline 2.2s linear infinite;
+          background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.2), transparent);
+          animation: scanline 8s linear infinite;
           will-change: transform;
         }
       `}</style>
@@ -191,8 +236,8 @@ Problema del cliente: ${problem}`;
                       <path d="M7 19h10"></path>
                     </svg>
                   </div>
-                  {(loading || isTyping) && (
-                    <div className="absolute -inset-1 border-2 border-accent-cyan rounded-2xl animate-ping opacity-30"></div>
+                  {loading && (
+                    <div className="absolute -inset-1 border-2 border-accent-cyan rounded-2xl animate-spin border-t-transparent opacity-40"></div>
                   )}
                 </div>
                 <div>
@@ -232,7 +277,16 @@ Problema del cliente: ${problem}`;
                 {loading ? 'ANALIZANDO...' : 'INICIAR ANALISIS IA'}
               </button>
 
-              {result && (
+              {loading && (
+                <div className="mt-10 p-8 bg-black/45 border border-accent-cyan/20 rounded-[2rem] animate-pulse">
+                  <div className="flex items-center gap-3 text-accent-cyan font-mono text-sm">
+                    <div className="w-2 h-2 bg-accent-cyan rounded-full animate-ping"></div>
+                    GENERANDO DIAGNÓSTICO PROFESIONAL...
+                  </div>
+                </div>
+              )}
+
+              {result && !loading && (
                 <div className="mt-10 p-8 bg-black/45 border border-accent-cyan/20 rounded-[2rem] animate-fade-in-up delay-3">
                   <div className="bg-bg-secondary/80 rounded-xl p-6 border border-white/5 font-mono text-sm text-text-primary/90 whitespace-pre-line">
                     {result}
