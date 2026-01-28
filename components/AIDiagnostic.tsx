@@ -175,10 +175,17 @@ export const AIDiagnostic: React.FC = () => {
       <style>{`
         @keyframes fadeInUpCustom { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes scanline {
-          0% { transform: translateY(-100%); opacity: 0; }
-          10% { opacity: 0.6; }
-          90% { opacity: 0.6; }
-          100% { transform: translateY(100vh); opacity: 0; }
+          0% { transform: translateY(0); opacity: 0; }
+          5% { opacity: 0.6; }
+          95% { opacity: 0.6; }
+          100% { transform: translateY(calc(100% + 1000px)); opacity: 0; }
+        }
+        .scanline-container {
+          position: absolute;
+          inset: 0;
+          overflow: visible;
+          pointer-events: none;
+          z-index: 10;
         }
         .scanline-line {
           position: absolute;
@@ -189,7 +196,7 @@ export const AIDiagnostic: React.FC = () => {
           width: 100%;
           background: linear-gradient(90deg, transparent 0%, rgba(0, 217, 255, 0.2) 20%, rgba(0, 217, 255, 0.6) 50%, rgba(0, 217, 255, 0.2) 80%, transparent 100%);
           box-shadow: 0 0 8px rgba(0, 217, 255, 0.5), 0 0 15px rgba(0, 217, 255, 0.3);
-          animation: scanline 6s linear infinite;
+          animation: scanline 4s linear infinite;
           will-change: transform;
         }
       `}</style>
@@ -203,7 +210,7 @@ export const AIDiagnostic: React.FC = () => {
           <div className="absolute -right-24 -top-24 w-72 h-72 rounded-full bg-accent-cyan/15 blur-3xl"></div>
           <div className="absolute -left-24 -bottom-24 w-72 h-72 rounded-full bg-accent-pink/10 blur-3xl"></div>
           <div className="absolute inset-0 pointer-events-none opacity-30" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
-          <div className="scanline-track">
+          <div className="scanline-container">
             <div className="scanline-line"></div>
           </div>
 
