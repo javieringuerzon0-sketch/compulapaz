@@ -165,7 +165,8 @@ export const Contact: React.FC = () => {
                     onChange={handleInputChange}
                     required
                     placeholder="Tu nombre"
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-text-primary placeholder-text-secondary/60 focus:border-white/20 focus:outline-none focus:ring-1 focus:ring-white/20"
+                    autoComplete="name"
+                    className="w-full appearance-none rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-base text-text-primary placeholder-text-secondary/60 focus:border-accent-cyan/50 focus:outline-none focus:ring-2 focus:ring-accent-cyan/20 transition-all"
                   />
                 </div>
                 <div>
@@ -178,9 +179,11 @@ export const Contact: React.FC = () => {
                     onChange={handleInputChange}
                     required
                     placeholder="tu@email.com"
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-text-primary placeholder-text-secondary/60 focus:border-white/20 focus:outline-none focus:ring-1 focus:ring-white/20"
+                    autoComplete="email"
+                    inputMode="email"
+                    className="w-full appearance-none rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-base text-text-primary placeholder-text-secondary/60 focus:border-accent-cyan/50 focus:outline-none focus:ring-2 focus:ring-accent-cyan/20 transition-all"
                   />
-                  {emailError && <p className="mt-2 text-xs text-accent-pink font-semibold">{emailError}</p>}
+                  {emailError && <p className="mt-2 text-xs text-accent-pink font-semibold animate-pulse">{emailError}</p>}
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -190,7 +193,7 @@ export const Contact: React.FC = () => {
                     <button
                       id="contact-servicio"
                       type="button"
-                      className="contact-select w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-text-primary focus:border-white/20 focus:outline-none focus:ring-1 focus:ring-white/20 flex items-center justify-between gap-3"
+                      className="contact-select w-full appearance-none rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-base text-text-primary focus:border-accent-cyan/50 focus:outline-none focus:ring-2 focus:ring-accent-cyan/20 flex items-center justify-between gap-3 transition-all"
                       aria-haspopup="listbox"
                       aria-expanded={isServiceOpen}
                       onClick={() => setIsServiceOpen(prev => !prev)}
@@ -199,8 +202,8 @@ export const Contact: React.FC = () => {
                         if (event.key === 'ArrowDown') setIsServiceOpen(true);
                       }}
                     >
-                      <span className="text-sm sm:text-base text-text-primary truncate">{formData.servicio}</span>
-                      <span className={`text-xs text-text-secondary transition-transform ${isServiceOpen ? 'rotate-180' : ''}`}>▼</span>
+                      <span className="text-base text-text-primary truncate">{formData.servicio}</span>
+                      <span className={`text-xs text-text-secondary transition-transform duration-300 ${isServiceOpen ? 'rotate-180' : ''}`}>▼</span>
                     </button>
                     {isServiceOpen && (
                       <div
@@ -268,16 +271,16 @@ export const Contact: React.FC = () => {
                   value={formData.mensaje}
                   onChange={handleInputChange}
                   required
-                  className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-text-primary placeholder-text-secondary/60 focus:border-white/20 focus:outline-none focus:ring-1 focus:ring-white/20"
+                  className="w-full appearance-none rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-base text-text-primary placeholder-text-secondary/60 focus:border-accent-cyan/50 focus:outline-none focus:ring-2 focus:ring-accent-cyan/20 transition-all resize-none"
                   placeholder="Cuéntanos el problema de tu equipo..."
                 ></textarea>
               </div>
               <button
                 type="submit"
                 disabled={formState === 'submitting'}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-white/10 border border-white/20 px-6 py-3 text-text-primary hover:bg-white/15 transition"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent-cyan/10 to-accent-purple/10 border border-white/10 px-6 py-4 text-base font-semibold text-text-primary hover:from-accent-cyan/20 hover:to-accent-purple/20 hover:border-white/20 active:scale-[0.98] transition-all duration-200"
               >
-                <span className="font-medium">
+                <span className="">
                   {formState === 'submitting' ? 'Enviando...' : 'Enviar solicitud'}
                 </span>
                 <svg

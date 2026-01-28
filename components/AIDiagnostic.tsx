@@ -175,35 +175,35 @@ export const AIDiagnostic: React.FC = () => {
       <style>{`
         @keyframes fadeInUpCustom { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes scanline {
-          0% { transform: translateY(0); opacity: 0; }
-          5% { opacity: 0.6; }
-          95% { opacity: 0.6; }
-          100% { transform: translateY(calc(100% + 1000px)); opacity: 0; }
+          0% { top: -10px; opacity: 0; }
+          5% { opacity: 0.7; }
+          95% { opacity: 0.7; }
+          100% { top: calc(100% + 10px); opacity: 0; }
         }
         .scanline-container {
           position: absolute;
           inset: 0;
-          overflow: visible;
           pointer-events: none;
-          z-index: 10;
+          z-index: 50;
+          overflow: visible;
         }
         .scanline-line {
           position: absolute;
           left: 0;
           right: 0;
-          top: 0;
-          height: 2px;
+          top: -10px;
+          height: 3px;
           width: 100%;
-          background: linear-gradient(90deg, transparent 0%, rgba(0, 217, 255, 0.2) 20%, rgba(0, 217, 255, 0.6) 50%, rgba(0, 217, 255, 0.2) 80%, transparent 100%);
-          box-shadow: 0 0 8px rgba(0, 217, 255, 0.5), 0 0 15px rgba(0, 217, 255, 0.3);
-          animation: scanline 4s linear infinite;
-          will-change: transform;
+          background: linear-gradient(90deg, transparent 0%, rgba(0, 217, 255, 0.3) 20%, rgba(0, 217, 255, 0.8) 50%, rgba(0, 217, 255, 0.3) 80%, transparent 100%);
+          box-shadow: 0 0 10px rgba(0, 217, 255, 0.6), 0 0 20px rgba(0, 217, 255, 0.4);
+          animation: scanline 3.5s linear infinite;
+          will-change: top;
         }
       `}</style>
 
       <div className="relative max-w-5xl mx-auto">
         <div className="absolute -inset-1 rounded-[2.75rem] bg-gradient-to-r from-accent-cyan/25 via-accent-purple/20 to-accent-pink/20 blur-2xl opacity-70"></div>
-        <div className="relative bg-bg-secondary/70 border border-white/10 rounded-[2.5rem] p-8 md:p-12 backdrop-blur-2xl shadow-[0_35px_90px_rgba(0,0,0,0.55)] overflow-hidden">
+        <div className="relative bg-bg-secondary/70 border border-white/10 rounded-[2.5rem] p-8 md:p-12 backdrop-blur-2xl shadow-[0_35px_90px_rgba(0,0,0,0.55)] overflow-visible">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(125,211,252,0.18),transparent_55%)]"></div>
           <div className="absolute inset-0 opacity-35 bg-[linear-gradient(120deg,rgba(255,255,255,0.08),transparent_40%)]"></div>
           <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-accent-cyan/60 to-transparent"></div>
