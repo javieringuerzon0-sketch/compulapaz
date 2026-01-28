@@ -180,22 +180,13 @@ export const AIDiagnostic: React.FC = () => {
           90% { opacity: 1; }
           100% { top: 105%; opacity: 0; }
         }
-        .scanline-container {
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-          z-index: 50; /* Z-index alto pero controlado */
-          overflow: hidden;
-          border-radius: 2.5rem;
-          -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
-          mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
-        }
         .scanline-line {
           position: absolute;
           left: 0;
           right: 0;
           top: 0;
           height: 3px;
+          /* Aseguramos que el ancho cubra todo */
           width: 100%;
           background: linear-gradient(90deg, transparent 0%, rgba(0, 217, 255, 0.0) 20%, rgba(0, 217, 255, 1) 50%, rgba(0, 217, 255, 0.0) 80%, transparent 100%);
           box-shadow: 0 0 10px rgba(0, 217, 255, 0.8), 0 0 20px rgba(0, 217, 255, 0.4);
@@ -212,9 +203,6 @@ export const AIDiagnostic: React.FC = () => {
           <div className="absolute -right-24 -top-24 w-72 h-72 rounded-full bg-accent-cyan/15 blur-3xl"></div>
           <div className="absolute -left-24 -bottom-24 w-72 h-72 rounded-full bg-accent-pink/10 blur-3xl"></div>
           <div className="absolute inset-0 pointer-events-none opacity-30" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
-          <div className="scanline-container">
-            <div className="scanline-line"></div>
-          </div>
 
           <div className="relative">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-10 animate-fade-in-up">
@@ -311,6 +299,13 @@ export const AIDiagnostic: React.FC = () => {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+
+        {/* SCANLINE OVERLAY: Hermano independiente flotando sobre todo */}
+        <div className="absolute inset-0 pointer-events-none z-50 overflow-hidden rounded-[2.5rem]">
+          <div className="scanline-container-inner h-full w-full relative">
+            <div className="scanline-line"></div>
           </div>
         </div>
       </div>
